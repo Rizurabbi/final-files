@@ -1,0 +1,345 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        
+
+        *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.containers{
+    width: 100%;
+    height: 10vh;
+    /*background: #e3ebfe;*/
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button{
+    width: 270px;
+    height: 50px;
+    border: none;
+    outline: none;
+    background: #2f2f2f;
+    color: #fff;
+    font-size: 22px;
+    border-radius: 40px;
+    text-align: center;
+    box-shadow: 0 6px 20px -5px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.check-box{
+    width: 80px;
+    height: 50px;
+    border-radius: 40px;
+    box-shadow: 0 0 12px -2px rgba(0,0,0,0.5);
+    position: absolute;
+    top: 0;
+    right: -40px;
+    opacity: 0;
+}
+
+.check-box svg{
+    width: 40px;
+    margin: 8px;
+}
+
+svg path{
+    stroke-width: 3;
+    stroke: #fff;
+    stroke-dasharray: 34;
+    stroke-dashoffset: 34;
+    stroke-linecap: round;
+}
+
+.active{
+    background: #ff2b75;
+    transition: 1s;
+}
+
+.active .check-box{
+    right: 0;
+    opacity: 1;
+    transition: 1s;
+}
+
+.active p{
+    margin-right: 125px;
+    transition: 1s;
+}
+
+.active svg path{
+    stroke-dashoffset: 0;
+    transition: 1s;
+    transition-delay: 1s;
+}
+
+
+
+
+
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+
+
+
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 15px; /* Adjusted font size */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fffdfd; /* Adjusted box color */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 17px; /* Adjusted font size */
+        }
+
+        h1 {
+            text-align: center;
+            color: #111010; /* Adjusted text color */
+            font-size: 25px; /* Adjusted font size */
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 19px; /* Adjusted font size */
+            color: #171717; /* Adjusted text color */
+        }
+
+        select, input[type="date"], input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px; /* Adjusted font size */
+            margin-top: 10px;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        /*button {
+            display: inline-block;
+            width: auto; 
+            padding: 15px 30px; 
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px; 
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            margin: 0 10px;
+        }
+
+        */
+    </style>
+</head>
+
+<!------
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <form>
+            <div class="form-group">
+                <label for="batch">Select Batch:</label>
+                <select id="batch">
+                    <option value="batch18">Batch 18</option>
+                    <option value="batch19">Batch 19</option>
+                    <option value="batch20">Batch 20</option>
+                    <option value="batch21">Batch 21</option>
+                    <option value="batch22">Batch 22</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="starting-date">Class Starting Date:</label>
+                <input type="date" id="starting-date">
+            </div>
+            <div class="form-group">
+                <label for="routine-file">Upload Routine:</label>
+                <input type="file" id="routine-file">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="button-container">
+            <button onclick="goBack()">Back</button>
+            <button>Home</button>
+            <button>Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
+<!-->
+
+
+
+    <body>
+        <div class="container">
+            <h1>Admin Panel</h1>
+            <form id="admin-form">
+                <div class="form-group">
+                    <label for="batch">Select Batch:</label>
+                    <select id="batch">
+                        <option value="18">Batch 18</option>
+                        <option value="19">Batch 19</option>
+                        <option value="20">Batch 20</option>
+                        <option value="21">Batch 21</option>
+                        <option value="22">Batch 22</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="starting-date">Class Starting Date:</label>
+                    <input type="date" id="starting-date">
+                </div>
+                <!--- <div class="form-group">
+                    <label for="routine-file">Upload Routine:</label>
+                    <input type="file" id="routine-file">
+                </div>
+                
+                <button type="submit">Submit</button>
+                <---->
+            
+            <div class="containers">
+                <button id="btn" type="submit">
+                    <p id="btnText">Submit</p>
+                    <div class="check-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                            <path fill="transparent" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
+            </form>
+
+
+            <div class="button-container">
+                <button onclick="window.location.href='home page.html'">Home</button>
+
+                
+                <button style="float: right;" onclick="window.location.href='routine (1).html'">Routine</button>
+            </div>
+
+            <!--- 
+            <div class="button-container">
+                <button onclick="goBack()">Back</button>
+                <button>Home</button>
+                <button>Dashboard</button>
+            </div>
+        </div>
+             <---->
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p id="modal-message"></p>
+                <button id="okButton">OK</button>
+            </div>
+        </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="mail2.js"></script>
+    <script type="text/javascript">
+        const btn = document.querySelector("#btn");
+        const btnText = document.querySelector("#btnText");
+
+        btn.onclick = () => {
+            btnText.innerHTML = "Thanks";
+            btn.classList.add("active");
+        };
+    </script>
+</body>
+
+</html>

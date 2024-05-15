@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Schedules</title>
+    <style>
+        /* CSS styles for layout */
+        body {
+            font-family: Arial, sans-serif;
+            position: relative; /* Add relative positioning to the body */
+        }
+        .gradient-border {
+            --border-width: 3px;
+    position: relative;
+  display: flex;
+  flex-direction: column;  /* Change to column for vertical layout */
+  
+  
+  justify-content: center;
+  /*align-items: center;*/
+  width: 80px;  
+  height: 450px;
+  background: #222;
+  border-radius: var(--border-width);
+  padding: 80px;
+        
+        &::after {
+    position: absolute;
+    content: "";
+    top: calc(-1 * var(--border-width));
+    left: calc(-1 * var(--border-width));
+    z-index: -1;
+    width: calc(100% + var(--border-width) * 2);
+    height: calc(100% + var(--border-width) * 2);
+    background: linear-gradient(
+      60deg,
+      hsl(224, 85%, 66%),
+      hsl(269, 85%, 66%),
+      hsl(314, 85%, 66%),
+      hsl(359, 85%, 66%),
+      hsl(44, 85%, 66%),
+      hsl(89, 85%, 66%),
+      hsl(134, 85%, 66%),
+      hsl(179, 85%, 66%)
+    );
+    background-size: 1000% 700%;
+    background-position: 60% 50%;
+    border-radius: calc(2 * var(--border-width));
+    animation: moveGradient 4s alternate infinite;
+  }
+}
+
+@keyframes moveGradient {
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+        .schedule-container {
+              /* Change to column for vertical layout */
+  
+            display:flex;
+            justify-content: space-between;
+            padding: 20px 20px;
+        }
+
+        .schedule-column {
+            flex: 8;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+            margin-right: 20px;
+        }
+
+        .schedule-column:last-child {
+            margin-right: 0;
+        }
+
+        .schedule-column:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .box {
+            /*margin-bottom: 10px;*/
+            padding:  15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+            margin-bottom: 10px;
+        }
+
+        .box:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .current-week {
+            font-weight: bold;
+        }
+
+        .live-item {
+            font-weight: 700;
+            color: #121111;
+            animation: blink 0.5s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* CSS styles for close button */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            
+            cursor: pointer;
+            z-index: 9999; /* Ensure the button stays on top */
+        }
+        .close-button:hover
+        {
+            background: #000;
+            color: #fff; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Close button with icon -->
+    <div class="close-button" onclick="toggleNavbar()">
+        <img src="close.png" alt="Close" height="40">
+    </div>
+
+    <!-- Navigation bar (hidden by default) -->
+    <nav id="navbar" style="display: none;">
+        <ul>
+            <li><a href="home page.html">Home</a></li>
+            <li><a href="card.html">About</a></li>
+            <li><a href="notice.html">Notice</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Batch schedules container -->
+    <div class="schedule-container" id="schedule-container"></div>
+<script>
+    function toggleNavbar() {
+            const navbar = document.getElementById('navbar');
+            navbar.style.display = (navbar.style.display === 'none') ? 'block' : 'none';
+       }
+</script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-database.js";
+    
+        // Your web app's Firebase configuration (replace with yours)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVqa3uQVU2qKYF_cXv2j6jckROkt-8jvc",
+        authDomain: "firstone-afb98.firebaseapp.com",
+        databaseURL: "https://firstone-afb98-default-rtdb.firebaseio.com",
+        projectId: "firstone-afb98",
+        storageBucket: "firstone-afb98.appspot.com",
+        messagingSenderId: "904147941468",
+        appId: "1:904147941468:web:ed7d52d9882ea85438ce99"
+          
+        };
+    
+    
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+    
+        // Reference the 'admin-form' node in the database
+        const adminFormRef = ref(database, 'admin-form');
+    
+        // Function to calculate current week from starting date
+        function calculateCurrentWeek(startDate) {
+          const today = new Date();
+          const diffInMs = today.getTime() - startDate.getTime();
+          const weeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7));
+          return weeks + 1; // Add 1 to start from Week 1
+        }
+    
+        // Function to toggle navigation bar visibility
+       
+        onValue(adminFormRef, (snapshot) => {
+        const data = snapshot.val();   console.log(data);
+        });
+
+        // Dummy data representing schedule for 5 batches
+        const batchSchedules = {
+            'Batch 18': {
+                'startingDate': '2024-03-01',
+                'currentWeek': 'Break',
+                'liveItem': 'Break'
+            },
+            'Batch 19': {
+                'startingDate': '2024-03-15',
+                'currentWeek': 'Term Break',
+                'liveItem': 'Break'
+            },
+            'Batch 20': {
+                'startingDate': '2024-02-11',
+                'currentWeek': 5,
+                'liveItem': 'ETE380(IP Lab)'
+            },
+            'Batch 21': {
+                'startingDate': '2024-04-05',
+                'currentWeek': 12,
+                'liveItem': 'ETE 201'
+            },
+            'Batch 22': {
+                'startingDate': '2024-04-10',
+                'currentWeek': 2,
+                'liveItem': 'ETE 101'
+            }
+        };
+
+        // Function to render schedules
+        function renderSchedules() {
+            const scheduleContainer = document.getElementById('schedule-container');
+            for (const batch in batchSchedules) {
+                if (batchSchedules.hasOwnProperty(batch)) {
+                    const { startingDate, currentWeek, liveItem } = batchSchedules[batch];
+                    const column = document.createElement('div');
+                    column.classList.add('schedule-column', 'gradient-border');
+                    column.innerHTML = `
+                        <h2>${batch}</h2>
+                        <div class="box">
+                            <h3>Starting Date</h3>
+                            <p>${startingDate}</p>
+                        </div>
+                        <div class="box">
+                            <h3>Current Week</h3>
+                            <p class="current-week">${currentWeek}</p>
+                        </div>
+                        <div class="box" style="background-color: #fdecea;">
+                            <h3>Live Item</h3>
+                            <p class="live-item">${liveItem}</p>
+                        </div>
+                    `;
+                    scheduleContainer.appendChild(column);
+                }
+            }
+        }
+
+        // Call the renderSchedules function to render schedules on page load
+        window.onload = renderSchedules;
+    </script>
+</body>
+</html>
+`
